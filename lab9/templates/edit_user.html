@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Редактировать пользователя</title>
+</head>
+<body>
+    <h1>Редактировать пользователя</h1>
+
+    <form id="editUserForm">
+        <input name="username" value="{{ user.username }}" required><br>
+        <input name="email" value="{{ user.email }}" required><br>
+        <button type="submit">Сохранить</button>
+    </form>
+
+    <a href="/">Назад</a>
+
+    <script>
+        document.getElementById('editUserForm').addEventListener('submit', async function(event) {
+            event.preventDefault();  // Отключаем стандартную отправку формы
+            const form = event.target;
+            const formData = new FormData(form);
+            const body = new URLSearchParams(formData);
+
+            const response = await fetch("/users/edit/{{ user.id }}", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: body
+            });
+
+            if (response.redirected) {
+                window.location.href = response.url;
+            } else {
+                alert("Ошибка при обновлении пользователя");
+            }
+        });
+    </script>
+</body>
+</html>

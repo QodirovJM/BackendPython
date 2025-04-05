@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Редактировать пост</title>
+</head>
+<body>
+    <h1>Редактировать пост</h1>
+    <form id="editPostForm">
+        <input name="title" value="{{ post.title }}" required><br>
+        <textarea name="content" rows="4" cols="40">{{ post.content }}</textarea><br>
+        <select name="user_id">
+            {% for user in users %}
+            <option value="{{ user.id }}" {% if user.id == post.user_id %}selected{% endif %}>{{ user.username }}</option>
+            {% endfor %}
+        </select><br>
+        <button type="submit">Сохранить</button>
+    </form>
+    <a href="/">Назад</a>
+
+    <script>
+        document.getElementById('editPostForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const postData = new URLSearchParams(formData);
+            
+            const response = await fetch("/posts/edit/{{ post.id }}", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: postData
+            });
+
+            if (response.redirected) {
+                window.location.href = response.url;
+            } else {
+                alert("Ошибка при обновлении поста");
+            }
+        });
+    </script>
+</body>
+</html>
